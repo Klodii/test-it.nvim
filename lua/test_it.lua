@@ -1,13 +1,20 @@
+local utils = require 'utils'
 local ci = require 'cursor_info'
 
 -- run tests of the current file
 local M = {}
+
+---@class Options
+---@field path_prefix_to_remove string: prefix to remove from the file path
+---@field test_command string: command used to execute the test
 
 local options = {
   path_prefix_to_remove = '',
   test_command = 'pytest'
 }
 
+---Setup the packages
+---@param opts Options
 M.setup = function(opts)
   opts = opts or {}
   opts.path_prefix_to_remove = opts.path_prefix_to_remove or ''
@@ -53,7 +60,7 @@ M.build_test_path = function(prefix_to_remove)
 end
 
 
-M.open_floating_window = function()
+local open_floating_window = function()
   local width = vim.api.nvim_get_option_value('columns', {})
   local height = vim.api.nvim_get_option_value('lines', {})
   utils.open_floating_window(buf, {
@@ -64,20 +71,23 @@ M.open_floating_window = function()
   })
 end
 
----Open a terminal and execute the commands passed
----@param commands string[] list of commands to execute
-local open_terminal = function(commands)
+M.open_floating_terminal = function()
   if not buf then
     buf = vim.api.nvim_create_buf(false, true)
     vim.bo[buf].swapfile = false -- do not create a swap file
 
-    M.open_floating_window()
+    open_floating_window()
     vim.cmd.term()
     job_id = vim.bo.channel
   else
-    M.open_floating_window()
+    open_floating_window()
   end
+end
 
+---Open a terminal and execute the commands passed
+---@param commands string[] list of commands to execute
+local run_commands = function(commands)
+  M.open_floating_terminal()
   for i = 1, #commands do
     vim.fn.chansend(job_id, { commands[i] })
   end
@@ -88,15 +98,15 @@ end
 M.run = function(cursor_specific)
   cursor_specific = cursor_specific or false
 
-  local test_path = M.build_test_path(opts.path_prefix_to_remove)
+  local test_path = M.build_test_path(options.path_prefix_to_remove)
   local path_to_execute = test_path.file_path
   if cursor_specific == true then
     path_to_execute = test_path.full_test_path
   end
 
   local enter = "\r\n"
-  local commands = { opts.test_command .. path_to_execute .. enter }
-  open_terminal(commands)
+  local commands = { options.test_command .. " " .. path_to_execute .. enter }
+  run_commands(commands)
 end
 
 return M

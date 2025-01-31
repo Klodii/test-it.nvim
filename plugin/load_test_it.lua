@@ -10,12 +10,12 @@ end, {})
 
 --- Open the window wich the tests are running
 vim.api.nvim_create_user_command("OpenTestTerm", function()
-  require "test_it".open_floating_window()
+  require "test_it".open_floating_terminal()
 end, {})
 
 --- Copy full test path, related to the cursor position
 vim.api.nvim_create_user_command("CopyTestPath", function()
-  local copy = require 'copy'
+  local utils = require 'utils'
   local full_test_path = require "test_it".build_test_path().full_test_path
-  copy.to_clipboard(full_test_path)
+  utils.copy_to_clipboard(full_test_path)
 end, {})
