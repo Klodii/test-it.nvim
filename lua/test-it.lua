@@ -1,5 +1,5 @@
 local utils = require 'utils'
-local ci = require 'cursor_info'
+local ci = require 'cursor-info'
 
 -- run tests of the current file
 local M = {}
