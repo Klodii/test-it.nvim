@@ -35,6 +35,8 @@ local job_id = nil
 ---@param prefix_to_remove string: prefix to remove from the file path, it may be necessary when executing tests through docker
 ---@return TestPath
 M.build_test_path = function(prefix_to_remove)
+  prefix_to_remove = prefix_to_remove or options.path_prefix_to_remove
+
   local file_path = ci.get_relative_file_path()
   if string.sub(file_path, 0, #prefix_to_remove) == prefix_to_remove then
     file_path = string.sub(file_path, #prefix_to_remove + 1)
