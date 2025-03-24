@@ -47,9 +47,9 @@ M.build_test_path = function(prefix_to_remove)
   if names then
     if names.class_name then
       full_test_path = full_test_path .. "::" .. names.class_name
-      if names.function_name then
-        full_test_path = full_test_path .. "::" .. names.function_name
-      end
+    end
+    if names.function_name then
+      full_test_path = full_test_path .. "::" .. names.function_name
     end
   end
 
